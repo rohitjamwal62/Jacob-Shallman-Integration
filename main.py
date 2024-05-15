@@ -21,12 +21,18 @@ def create_user(name, due_date, notes, token):
         "dueDate": due_date
     }
     response = requests.post(url, headers=headers, json=payload)
-    print("Create New To Do")
+    if response.status_code == 200:
+        User_Id = json.loads(response.text).get('Id')
+        print("Create New To Do")
+        return User_Id
+        
 
-def complete_status_to_do(Id):
+def complete_status_to_do(Id,token):
     url = f"https://app.bloomgrowth.com/api/v1/todo/{Id}/complete?status=true"
-    response = requests.request("POST", url)
-    print("Complete Status True")
+    headers = {'accept': 'application/json', 'Authorization': f'Bearer {token}'}
+    response = requests.request("POST", url,headers=headers)
+    if response.status_code == 200:  
+        print("Complete Status True")
 
 def get_to_do(name, due_date, notes, token):
     url = "https://app.bloomgrowth.com/api/v1/todo/users/mine"
@@ -38,8 +44,12 @@ def get_to_do(name, due_date, notes, token):
         if check_records != []:
             output = {"Name": name, "Id": check_records[0]}
             print("user is already Exists")
+            complete_status_to_do(check_records[0],token)
+            return output
         else:
-            create_user(name, due_date, notes, token)
+            User_Id = create_user(name, due_date, notes, token)
+            complete_status_to_do(User_Id,token)
+            output = {"User_Id":User_Id}
 
 
 def main(input_data):
@@ -51,8 +61,5 @@ def main(input_data):
         get_to_do(asana_name, due_date, notes, token)
     else:
         print("Token retrieval failed")
-
-# This is just for testing purpose, replace it with actual input_data when using in Zapier
-input_data = {'Name': 'Sample Task1', 'dueDate': '2024-05-14', 'notes': 'Sample notes'}
-
-main(input_data)
+input_data = {"Name":"jack test new 15 mays","due_date":"2024-05-16","notes":""}
+output = main(input_data)
