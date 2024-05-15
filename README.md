@@ -1,2 +1,2 @@
 # Jacob-Shallman-Integration
-Integration from Bloom to Asana using zapier
+Integration from Asana to Bloom using zapier
